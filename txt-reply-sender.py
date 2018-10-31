@@ -5,9 +5,12 @@ config = utils.get_config()
 
 client = Client(config["account"], config["token"])
 
+def count_inbound(all_messages):
+    return len([message for message in all_messages if message.direction == "inbound"])
+
 def get_messages(client):
     all_messages = client.messages.list()
-    print('There are {} messages in your account.'.format(len(all_messages)))
+    print('There are {} messages in your account.'.format(count_inbound(all_messages)))
     for message in all_messages:
         if message.direction == "inbound":
             print("got " + message.body + " from " + message.from_ )

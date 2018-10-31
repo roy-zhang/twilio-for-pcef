@@ -18,7 +18,7 @@ def get_messages(client):
             response = input("type response: ")
             if response != "skip":
                 if response:
-                    utils.txt(client, message.from_, response)
+                    utils.txt(config["number_to_send_from"], client, message.from_, response)
                     utils.log(config["sent_logs_filename"], "sent " + response + " to " + message.from_)
                 utils.delete_message(client, message.sid)
 

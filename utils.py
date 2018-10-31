@@ -10,9 +10,9 @@ def log(log_filename, msg):
     fo.write(msg + "\n")
     fo.close()
 
-def txt(client, number, message):
+def txt(from_number, client, number, message):
 
-    client.messages.create(to=number, from_="+13195354205", body=message)
+    client.messages.create(to=number, from_=from_number, body=message)
 
 def delete_message(client, message_sid):
     client.messages(message_sid).delete()

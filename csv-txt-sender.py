@@ -1,14 +1,13 @@
 from twilio.rest import Client
 import json
 import csv
+import utils
 
-def get_config():
-    with open('config.json') as f:
-        return json.load(f)
-
-def block_then_call(row):
-    input("press enter to call " + row[1])
-    call(row[1], "hello " + row[0] + " plz vote citizen")
+def block_then_txt(row):
+    message = config["initial_message_hello"] + " " + row[0] + " " + config["initial_message_after_hello"]
+    input("press enter to text\n" + message + "\n  to " + row[1])
+    utils.log(config["sent_logs_filename"], "sent " + message + " to " + row[1])
+    utils.txt(client, row[1], "hello " + row[0] + " plz vote citizen")
 
 def map_csv(csv_filename, map_row_fn):
     with open(csv_filename, 'r') as csvfile:
@@ -16,33 +15,13 @@ def map_csv(csv_filename, map_row_fn):
         for row in reader:
             map_row_fn(row)
 
-
-def call(number, message):
-    client.messages.create(to="+1"+number, from_="+13195354205", body=message)
-
-def log(log_filename, msg):
-    fo = open(log_filename, "a")
-    fo.write(msg + "\n")
-    fo.close()
-
-def io_loop_forever(input_fn):
-    while True:
-        str = input("Enter your input: ")
-        input_fn("Received input is : ", str)
-
-def get_messages(client):
-    all_messages = client.messages.list()
-    print('There are {} messages in your account.'.format(len(all_messages)))
-    for message in all_messages:
-        print(message)
-
 # start
-config = get_config()
-log(config["log_filename"], "starting the program")
+config = utils.get_config()
+utils.log(config["log_filename"], "starting the program")
 
 client = Client(config["account"], config["token"])
 
-map_csv(config["csv_filename"], block_then_call)
+map_csv(config["csv_filename"], block_then_txt)
 
 
 #map_csv(config["csv_filename"], print_row)

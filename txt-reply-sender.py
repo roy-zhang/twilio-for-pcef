@@ -13,11 +13,14 @@ def get_messages(client):
             print("got " + message.body + " from " + message.from_ )
             utils.log(config["received_logs_filename"], "got " + message.body + " from " + message.from_)
             response = input("type response: ")
-            if response:
-                utils.txt(client, message.from_, response)
+            if response != "skip":
+                if response:
+                    utils.txt(client, message.from_, response)
+                    utils.log(config["sent_logs_filename"], "sent " + response + " to " + message.from_)
                 utils.delete_message(client, message.sid)
-                utils.log(config["sent_logs_filename"], "sent " + response + " to " + message.from_)
 
+print("to delete and not respond, hit enter")
+print("to skip and not delete, type \"skip\" then press enter")
 get_messages(client)
 
 print("no more new messages!")

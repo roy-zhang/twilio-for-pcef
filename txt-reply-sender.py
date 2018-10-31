@@ -20,3 +20,4 @@ def get_messages(client):
 
 get_messages(client)
 
+print("no more new messages!")

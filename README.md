@@ -9,7 +9,7 @@ https://github.com/roy-zhang/twilio-for-pcef
 open zip in files, unzip, then drag to the downloads folder
 
 rename sample-config.json to config.json
-and fill in the api account and token.
+and fill in the api account, token and phone number.
 change message as necessary
 
 open terminal with ctrl alt t

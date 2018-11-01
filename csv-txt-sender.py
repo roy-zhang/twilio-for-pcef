@@ -4,7 +4,9 @@ import utils
 
 def block_then_txt(row):
     message = config["initial_message_hello"] + " " + row[0] + " " + config["initial_message_after_hello"]
-    input("press enter to text\n" + message + "\n  to " + row[1])
+    response = input("Press enter send this text to " + row[1] + "\n" +
+                     "--------------------------\n\n" + message + "\n\n" +
+                     "--------------------------\n\n")
     utils.log(config["sent_logs_filename"], "sent " + message + " to " + row[1])
     utils.txt(config["number_to_send_from"], client, row[1], message)
 
@@ -14,9 +16,9 @@ def map_csv(csv_filename, map_row_fn):
         for row in reader:
             map_row_fn(row)
 
-# start
-config = utils.get_config()
+if __name__ == '__main__':
+    config = utils.get_config()
 
-client = Client(config["account"], config["token"])
+    client = Client(config["account"], config["token"])
 
-map_csv(config["csv_filename"], block_then_txt)
+    map_csv(config["csv_filename"], block_then_txt)

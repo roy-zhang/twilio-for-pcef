@@ -10,20 +10,29 @@ def count_inbound(all_messages):
 
 def get_messages(client):
     all_messages = client.messages.list()
-    print('There are {} messages in your account.'.format(count_inbound(all_messages)))
+    print('There are {} inbound messages in your account ...\n'.format(count_inbound(all_messages)))
     for message in all_messages:
         if message.direction == "inbound":
-            print("got " + message.body + " from " + message.from_ )
+            print("<")
+            print(f"From {message.from_}:\n--------------------------\n\n"
+                  f"{message.body}\n\n--------------------------\n")
             utils.log(config["received_logs_filename"], "got " + message.body + " from " + message.from_)
-            response = input("type response: ")
-            if response != "skip":
-                if response:
-                    utils.txt(config["number_to_send_from"], client, message.from_, response)
-                    utils.log(config["sent_logs_filename"], "sent " + response + " to " + message.from_)
+            response = input("To skip this message press enter.\n"
+                             "To delete this message type 'd' and press enter.\n"
+                             "Otherwise, type a response and press enter to send: ")
+            if response.lower() == 'd':
                 utils.delete_message(client, message.sid)
+                print(">")
+            elif response:
+                print(f"\nSent {response} to {message.from_}.\n") 
+                utils.txt(config["number_to_send_from"], client, message.from_, response)
+                utils.log(config["sent_logs_filename"], "sent " + response + " to " + message.from_)
+                utils.delete_message(client, message.sid)
+                print(">")
+            else:
+                print(">")
+                continue
 
-print("to delete and not respond, hit enter")
-print("to skip and not delete, type \"skip\" then press enter")
 get_messages(client)
 
-print("no more new messages!")
+print("No more new messages!")

@@ -11,7 +11,6 @@ def log(log_filename, msg):
     fo.close()
 
 def txt(from_number, client, number, message):
-
     client.messages.create(to=number, from_=from_number, body=message)
 
 def delete_message(client, message_sid):

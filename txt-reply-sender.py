@@ -9,8 +9,11 @@ client = Client(config["account"], config["token"])
 def count_inbound(all_messages):
     return len([message for message in all_messages if message.direction == "inbound"])
 
+def format_date(dateStr):
+    return dateStr.astimezone().strftime("%Y-%m-%d %I:%M %p")
+
 def print_preamble(message):
-    print(f"From {message.from_}:\n--------------------------\n\n"
+    print(f"From {message.from_}: @ {format_date(message.date_sent)}\n--------------------------\n\n"
           f"{message.body}\n\n--------------------------\n")
 
 def get_input():

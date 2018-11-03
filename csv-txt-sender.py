@@ -3,7 +3,7 @@ import csv
 import utils
 
 def block_then_txt(row):
-    message = config["initial_message_hello"] + " " + row[0] + " " + config["initial_message_after_hello"]
+    message = config["initial_message_hello"] + " " + row[0] + ", " + config["initial_message_after_hello"]
     response = input("Press enter send this text to " + row[1] + "\n" +
                      "--------------------------\n\n" + message + "\n\n" +
                      "--------------------------\n\n")

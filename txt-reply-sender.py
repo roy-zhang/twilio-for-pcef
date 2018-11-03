@@ -1,5 +1,6 @@
 from twilio.rest import Client
 import utils
+import datetime
 
 config = utils.get_config()
 
@@ -24,6 +25,9 @@ def between(numberStr, floor, ceiling):
 def filter_numbers(messages, floor, ceiling):
     return [message for message in messages if between(message.from_, floor, ceiling) and message.direction == "inbound"]
 
+def time_what_hours_ago(hours_ago):
+    return datetime.datetime.now() - datetime.timedelta(hours=hours_ago)
+
 def get_messages(client):
     retrieved_messages = client.messages.list(limit=1000)
     filtered_messages = filter_numbers(retrieved_messages, config["last_number_floor"], config["last_number_ceiling"])
@@ -37,8 +41,8 @@ def get_messages(client):
                 utils.delete_message(client, message.sid)
                 print(">")
             elif response:
-                print(f"\nSent {response} to {message.from_}.\n") 
-                utils.txt(config["number_to_send_from"], client, message.from_, response)
+                print(f"\nSent {response} to {message.from_}.\n")
+                utils.txt(message.to, client, message.from_, response)
                 utils.log(config["sent_logs_filename"], "sent " + response + " to " + message.from_)
                 utils.delete_message(client, message.sid)
                 print(">")

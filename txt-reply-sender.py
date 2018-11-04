@@ -28,7 +28,7 @@ def get_input():
           f"\t 's' - Skip this message.\n"
           f"\t 'd' - Delete this message.\n"
           f"\t 'q' - Quit the program.\n>> "
-          f"\t       or your own custom response\n", end='')
+          f"\t     - or your own custom response\n", end='')
     return input()
 
 def between(numberStr, floor, ceiling):
@@ -40,6 +40,9 @@ def filter_numbers(messages, floor, ceiling):
 
 def time_what_hours_ago(hours_ago):
     return datetime.datetime.now() - datetime.timedelta(hours=hours_ago)
+
+def print_autoresponding(message):
+    print(f"\n> autoresponding TO {message.from_} <\n{message.body}\n")
 
 def txt_back(message, replyStr):
     print(f"\n> SENDING TO {message.from_} <\n{replyStr}\n"
@@ -59,10 +62,13 @@ def get_messages(twilio_client):
     print('\nThere are {} inbound messages in your account ...\n'.format(count_inbound(filtered_messages)))
     for message in filtered_messages:
         if text_filter.has_wrong_number(message.body):
+            print_autoresponding(message)
             txt_back(message, "Sorry! Hope you vote anyways!")
         elif text_filter.has_already_voted(message.body):
+            print_autoresponding(message)
             txt_back(message, "Great! Thanks for voting!")
         elif text_filter.has_stop_text(message.body) or text_filter.has_swear_words(message.body):
+            print_autoresponding(message)
             delete_msg(twilio_client, message)
         else:
             print_preamble(message)

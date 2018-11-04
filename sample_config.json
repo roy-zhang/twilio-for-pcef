@@ -5,13 +5,13 @@
     "initial_message_hello": "Hello",
     "initial_message_after_hello": "This is a sample message.",
     "csv_filename": "name_number.csv",
-    "last_number_floor": 0,
+    "last_number_floor": 7,
     "last_number_ceiling": 9,
     "received_logs_filename": "received-logs.txt",
     "sent_logs_filename": "sent-logs.txt",
     "canned_responses": {
-        "1": "response A",
-        "2": "response B",
-        "3": "response C"
+         "1": "Awesome! thanks for voting!",
+         "2": "Sorry! hope you vote anyways",
+         "3": "That's fine! Thanks for letting me know"
     }
 }

@@ -61,6 +61,8 @@ def get_messages(twilio_client):
             txt_back(message, "Sorry! Hope you vote anyways!")
         elif text_filter.has_already_voted(message.body):
             txt_back(message, "Great! Thanks for voting!")
+        elif text_filter.has_stop_text(message.body):
+            utils.delete_message(twilio_client, message.sid)
         else:
             print_preamble(message)
             utils.log(config["received_logs_filename"], "got " + message.body + " from " + message.from_)

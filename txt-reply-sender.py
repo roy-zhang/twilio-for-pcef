@@ -8,17 +8,26 @@ config = utils.get_config()
 
 client = Client(config["account"], config["token"])
 
+def number_to_message_list(messages):
+    returnMe = {}
+    for message in messages:
+        if returnMe.get(message.from_, False):
+            returnMe[message.from_].append(message)
+        else:
+            returnMe[message.from_] = [message]
+    return returnMe
+
 def count_inbound(all_messages):
     return len([message for message in all_messages if message.direction == "inbound"])
 
 def format_date(date_str):
     return date_str.astimezone().strftime("%Y-%m-%d %I:%M %p")
 
-def print_preamble(message):
+def print_preamble(msgs):
     print("_________________________________________________________________\n"
-          f"From {message.from_}: @ {format_date(message.date_sent)}\n"
+          f"From {msgs[-1].from_}: @ {format_date(msgs[-1].date_sent)}\n"
           f"----------------------------------------\n\n"
-          f"{message.body}\n\n----------------------------------------")
+          f"{body_of(msgs)}\n\n----------------------------------------")
 
 def get_input():
     print(f"Select your response:\n"
@@ -41,56 +50,65 @@ def filter_numbers(messages, floor, ceiling):
 def time_what_hours_ago(hours_ago):
     return datetime.datetime.now() - datetime.timedelta(hours=hours_ago)
 
-def print_autoresponding(message):
-    print(f"\n> autoresponding TO {message.from_} <\n{message.body}\n")
+def auto_respond(msgs, response_str):
+    print(f"\n> autoresponding TO {msgs[-1].from_} <\n{body_of(msgs)}\n")
+    txt_back(msgs, response_str)
 
-def txt_back(message, replyStr):
-    print(f"\n> SENDING TO {message.from_} <\n{replyStr}\n"
+def txt_back(msgs, reply_str):
+    print(f"\n> SENDING TO {msgs[-1].from_} <\n{reply_str}\n"
           "_________________________________________________________________\n\n")
-    utils.delete_message(client, message.sid)
-    utils.txt(message.to, client, message.from_, replyStr)
-    utils.log(config["sent_logs_filename"], "sent " + replyStr + " to " + message.from_)
+    for msg in msgs:
+        utils.delete_message(client, msg.sid)
+    utils.txt(msgs[-1].to, client, msgs[-1].from_, reply_str)
+    utils.log(config["sent_logs_filename"], "sent " + reply_str + " to " + msgs[-1].from_)
 
-def delete_msg(twilio_client, message):
-    utils.delete_message(twilio_client, message.sid)
-    print(f"> DELETING MESSAGE {message.body}<\n " 
+def delete_msg(twilio_client, msgs):
+    for msg in msgs:
+        utils.delete_message(twilio_client, msg.sid)
+    print(f"> DELETING MESSAGE {body_of(msgs)}<\n " 
           "_________________________________________________________________\n\n")
+
+def body_of(msgs):
+    return " ".join(reversed([msg.body for msg in msgs]))
+
+def handle_message(twilio_client, msgs):
+    body = body_of(msgs)
+    if text_filter.has_wrong_number(body):
+        if text_filter.has_already_voted(body):
+            auto_respond(msgs, "Sorry! Thanks for voting anyways!")
+        else:
+            auto_respond(msgs, "Sorry! Hope you vote anyways!")
+    elif text_filter.has_already_voted(body):
+        auto_respond(msgs, "Great! Thanks for voting!")
+    elif text_filter.has_stop_text(body) or text_filter.has_swear_words(body):
+        print(f"> AUTODELETING MESSAGE {body}<\n "
+              "_________________________________________________________________\n\n")
+        delete_msg(twilio_client, msgs)
+    else:
+        print_preamble(msgs)
+        utils.log(config["received_logs_filename"], "got " + body + " from " + msgs[-1].from_)
+        response_selection = get_input()
+        if response_selection == 'd':
+            delete_msg(twilio_client, msgs)
+        elif response_selection in ['1', '2', '3']:
+            txt_back(msgs, config['canned_responses'][response_selection])
+        elif response_selection == 's' or response_selection == '':
+            print("> SKIPPING MESSAGE <\n"
+                  "_________________________________________________________________\n\n")
+        elif response_selection == 'q':
+            print('Exiting.')
+            sys.exit()
+        else:
+            txt_back(msgs, response_selection)
 
 def get_messages(twilio_client):
-    retrieved_messages = twilio_client.messages.list(limit=5000)
+    retrieved_messages = twilio_client.messages.list(limit=50000)
     filtered_messages = filter_numbers(retrieved_messages, config["last_number_floor"], config["last_number_ceiling"])
     print('\nThere are {} inbound messages in your account ...\n'.format(count_inbound(filtered_messages)))
-    for message in filtered_messages:
-        if text_filter.has_wrong_number(message.body):
-            if text_filter.has_already_voted(message.body):
-                print_autoresponding(message)
-                txt_back(message, "Sorry! Thanks for voting anyways!")
-            else:
-                print_autoresponding(message)
-                txt_back(message, "Sorry! Hope you vote anyways!")
-        elif text_filter.has_already_voted(message.body):
-            print_autoresponding(message)
-            txt_back(message, "Great! Thanks for voting!")
-        elif text_filter.has_stop_text(message.body) or text_filter.has_swear_words(message.body):
-            print_autoresponding(message)
-            delete_msg(twilio_client, message)
-        else:
-            print_preamble(message)
-            utils.log(config["received_logs_filename"], "got " + message.body + " from " + message.from_)
-            response_selection = get_input()
-            if response_selection == 'd':
-                delete_msg(twilio_client, message)
-            elif response_selection in ['1', '2', '3']:
-                txt_back(message, config['canned_responses'][response_selection])
-            elif response_selection == 's' or response_selection == '':
-                print("> SKIPPING MESSAGE <\n"
-                      "_________________________________________________________________\n\n")
-            elif response_selection == 'q':
-                print('Exiting.')
-                sys.exit()
-            else:
-                txt_back(message, response_selection)
 
+    number_msg_map = number_to_message_list(filtered_messages)
+    for number, message_list in number_msg_map.items():
+        handle_message(client, message_list)
 
 
 get_messages(client)

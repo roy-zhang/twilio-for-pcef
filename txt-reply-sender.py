@@ -57,8 +57,10 @@ def get_messages(twilio_client):
     filtered_messages = filter_numbers(retrieved_messages, config["last_number_floor"], config["last_number_ceiling"])
     print('\nThere are {} inbound messages in your account ...\n'.format(count_inbound(filtered_messages)))
     for message in filtered_messages:
-        if text_filter.is_wrong_number(message.body):
-            continue
+        if text_filter.has_wrong_number(message.body):
+            txt_back(message, "Sorry! Hope you vote anyways!")
+        elif text_filter.has_already_voted(message.body):
+            txt_back(message, "Great! Thanks for voting!")
         else:
             print_preamble(message)
             utils.log(config["received_logs_filename"], "got " + message.body + " from " + message.from_)
@@ -83,7 +85,6 @@ def get_messages(twilio_client):
             elif response_selection == 'q':
                 print('Exiting.')
                 sys.exit()
-
 
 get_messages(client)
 

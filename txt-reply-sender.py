@@ -25,17 +25,11 @@ def get_input():
           f"\t '1' - {config['canned_responses']['1']}\n"
           f"\t '2' - {config['canned_responses']['2']}\n"
           f"\t '3' - {config['canned_responses']['3']}\n"
-          f"\t '4' - Enter your own response.\n"
           f"\t 's' - Skip this message.\n"
           f"\t 'd' - Delete this message.\n"
-          f"\t 'q' - Quit the program.\n>> ", end='')
-    while True:
-        r = input()
-        if r in ['1', '2', '3', '4', 's', 'd', 'q']:
-            return r
-        else:
-            print('(1, 2, 3, 4, s, d, or q) >> ', end='')
-            continue
+          f"\t 'q' - Quit the program.\n>> "
+          f"\t       or your own custom response\n", end='')
+    return input()
 
 def between(numberStr, floor, ceiling):
     lastNumber = int(numberStr[-1:])
@@ -76,8 +70,6 @@ def get_messages(twilio_client):
             response_selection = get_input()
             if response_selection == 'd':
                 delete_msg(twilio_client, message)
-            elif response_selection == '4':
-                txt_back(message, input("ENTER CUSTOM RESPONSE:\n"))
             elif response_selection in ['1', '2', '3']:
                 txt_back(message, config['canned_responses'][response_selection])
             elif response_selection == 's':
@@ -86,6 +78,10 @@ def get_messages(twilio_client):
             elif response_selection == 'q':
                 print('Exiting.')
                 sys.exit()
+            else:
+                txt_back(message, response_selection)
+
+
 
 get_messages(client)
 

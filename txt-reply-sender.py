@@ -57,13 +57,17 @@ def delete_msg(twilio_client, message):
           "_________________________________________________________________\n\n")
 
 def get_messages(twilio_client):
-    retrieved_messages = twilio_client.messages.list()
+    retrieved_messages = twilio_client.messages.list(limit=5000)
     filtered_messages = filter_numbers(retrieved_messages, config["last_number_floor"], config["last_number_ceiling"])
     print('\nThere are {} inbound messages in your account ...\n'.format(count_inbound(filtered_messages)))
     for message in filtered_messages:
         if text_filter.has_wrong_number(message.body):
-            print_autoresponding(message)
-            txt_back(message, "Sorry! Hope you vote anyways!")
+            if text_filter.has_already_voted(message.body):
+                print_autoresponding(message)
+                txt_back(message, "Sorry! Thanks for voting anyways!")
+            else:
+                print_autoresponding(message)
+                txt_back(message, "Sorry! Hope you vote anyways!")
         elif text_filter.has_already_voted(message.body):
             print_autoresponding(message)
             txt_back(message, "Great! Thanks for voting!")

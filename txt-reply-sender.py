@@ -21,13 +21,13 @@ def print_preamble(message):
 
 def get_input():
     print(f"Select your response:\n"
-            f"\t '1' - {config['canned_responses']['1']}\n"
-            f"\t '2' - {config['canned_responses']['2']}\n"
-            f"\t '3' - {config['canned_responses']['3']}\n"
-            f"\t '4' - Enter your own response.\n"
-            f"\t 's' - Skip this message.\n"
-            f"\t 'd' - Delete this message.\n"
-            f"\t 'q' - Quit the program.\n>> ", end='')
+          f"\t '1' - {config['canned_responses']['1']}\n"
+          f"\t '2' - {config['canned_responses']['2']}\n"
+          f"\t '3' - {config['canned_responses']['3']}\n"
+          f"\t '4' - Enter your own response.\n"
+          f"\t 's' - Skip this message.\n"
+          f"\t 'd' - Delete this message.\n"
+          f"\t 'q' - Quit the program.\n>> ", end='')
     while True:
         r = input()
         if r in ['1', '2', '3', '4', 's', 'd', 'q']:
@@ -63,22 +63,22 @@ def get_messages(client):
                 custom_response = input("ENTER CUSTOM RESPONSE:\n")
                 print(f"\n> SENDING TO {message.from_} <\n{custom_response}\n"
                       "_________________________________________________________________\n\n")
-                utils.txt(message.to, client, message.from_, response)
-                utils.log(config["sent_logs_filename"], "sent " + response + " to " + message.from_)
+                utils.txt(message.to, client, message.from_, custom_response)
+                utils.log(config["sent_logs_filename"], "sent " + custom_response + " to " + message.from_)
                 utils.delete_message(client, message.sid)
             elif response_selection in ['1', '2', '3']:
                 print(f"\n> SENDING TO {message.from_} <\n{config['canned_responses'][response_selection]}\n"
                       "_________________________________________________________________\n\n")
-                utils.txt(message.to, client, message.from_, response)
-                utils.log(config["sent_logs_filename"], "sent " + response + " to " + message.from_)
+                utils.txt(message.to, client, message.from_, custom_response)
+                utils.log(config["sent_logs_filename"], "sent " + custom_response + " to " + message.from_)
                 utils.delete_message(client, message.sid)
             elif response_selection == 's':
                 print("> SKIPPING MESSAGE <\n"
                       "_________________________________________________________________\n\n")
-                continue
             elif response_selection == 'q':
                 print('Exiting.')
                 sys.exit()
+
 
 get_messages(client)
 

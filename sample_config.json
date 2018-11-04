@@ -1,10 +1,17 @@
-{"account" : "",
- "token" : "",
- "number_to_send_from" : "",
- "initial_message_hello" : "Hello",
- "initial_message_after_hello" : "plz turn in your ballot, especially if you put yes for 26-201. thanks!",
- "csv_filename" : "call-me.csv",
- "last_number_floor": 0,
- "last_number_ceiling": 9,
- "received_logs_filename" : "received-logs.txt",
- "sent_logs_filename" : "sent-logs.txt"}
+{
+    "account": "",
+    "token": "",
+    "number_to_send_from": "",
+    "initial_message_hello": "Hello",
+    "initial_message_after_hello": "This is a sample message.",
+    "csv_filename": "name_number.csv",
+    "last_number_floor": 0,
+    "last_number_ceiling": 9,
+    "received_logs_filename": "received-logs.txt",
+    "sent_logs_filename": "sent-logs.txt",
+    "canned_responses": {
+        "1": "response A",
+        "2": "response B",
+        "3": "response C"
+    }
+}

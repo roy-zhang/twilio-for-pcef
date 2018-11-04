@@ -16,8 +16,8 @@ def format_date(dateStr):
 def print_preamble(message):
     print("_________________________________________________________________\n"
           f"From {message.from_}: @ {format_date(message.date_sent)}\n"
-          f"--------------------------\n\n"
-          f"{message.body}\n\n--------------------------")
+          f"----------------------------------------\n\n"
+          f"{message.body}\n\n----------------------------------------")
 
 def get_input():
     print(f"Select your response:\n"

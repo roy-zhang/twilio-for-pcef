@@ -11,3 +11,6 @@ def has_already_voted(body):
 
 def has_stop_text(body):
     return bool(re.compile(r'(?i)^.*(do not text|don\'t text|take me off|stop text|unsubscribe).*$').search(body))
+
+def has_swear_words(body):
+    return bool(re.compile(r'(?i)^.*(fuck|shit|bitch|cunt|goddamn|biatch|crap|damn|prick|slut|whore).*$').search(body))

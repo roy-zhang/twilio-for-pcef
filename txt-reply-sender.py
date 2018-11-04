@@ -61,7 +61,7 @@ def get_messages(twilio_client):
             txt_back(message, "Sorry! Hope you vote anyways!")
         elif text_filter.has_already_voted(message.body):
             txt_back(message, "Great! Thanks for voting!")
-        elif text_filter.has_stop_text(message.body):
+        elif text_filter.has_stop_text(message.body) or text_filter.has_swear_words(message.body):
             utils.delete_message(twilio_client, message.sid)
         else:
             print_preamble(message)

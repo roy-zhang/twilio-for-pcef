@@ -7,7 +7,10 @@ def get_config():
 
 def log(log_filename, msg):
     fo = open(log_filename, "a")
-    fo.write(msg + "\n")
+    try:
+        fo.write(msg + "\n")
+    except UnicodeEncodeError:
+        fo.write('This message had an emoji.\n')
     fo.close()
 
 def txt(from_number, client, number, message):

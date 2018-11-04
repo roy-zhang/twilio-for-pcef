@@ -48,9 +48,16 @@ def time_what_hours_ago(hours_ago):
     return datetime.datetime.now() - datetime.timedelta(hours=hours_ago)
 
 def txt_back(message, replyStr):
+    print(f"\n> SENDING TO {message.from_} <\n{replyStr}\n"
+          "_________________________________________________________________\n\n")
     utils.txt(message.to, client, message.from_, replyStr)
     utils.log(config["sent_logs_filename"], "sent " + replyStr + " to " + message.from_)
     utils.delete_message(client, message.sid)
+
+def delete_msg(twilio_client, message):
+    utils.delete_message(twilio_client, message.sid)
+    print(f"> DELETING MESSAGE {message.body}<\n " 
+          "_________________________________________________________________\n\n")
 
 def get_messages(twilio_client):
     retrieved_messages = twilio_client.messages.list(limit=100)
@@ -62,25 +69,17 @@ def get_messages(twilio_client):
         elif text_filter.has_already_voted(message.body):
             txt_back(message, "Great! Thanks for voting!")
         elif text_filter.has_stop_text(message.body) or text_filter.has_swear_words(message.body):
-            utils.delete_message(twilio_client, message.sid)
+            delete_msg(twilio_client, message)
         else:
             print_preamble(message)
             utils.log(config["received_logs_filename"], "got " + message.body + " from " + message.from_)
             response_selection = get_input()
             if response_selection == 'd':
-                utils.delete_message(twilio_client, message.sid)
-                print("> DELETING MESSAGE <\n"
-                      "_________________________________________________________________\n\n")
+                delete_msg(twilio_client, message)
             elif response_selection == '4':
-                custom_response = input("ENTER CUSTOM RESPONSE:\n")
-                print(f"\n> SENDING TO {message.from_} <\n{custom_response}\n"
-                      "_________________________________________________________________\n\n")
-                txt_back(message, custom_response)
+                txt_back(message, input("ENTER CUSTOM RESPONSE:\n"))
             elif response_selection in ['1', '2', '3']:
-                canned_response = config['canned_responses'][response_selection]
-                print(f"\n> SENDING TO {message.from_} <\n{canned_response}\n"
-                      "_________________________________________________________________\n\n")
-                txt_back(message, canned_response)
+                txt_back(message, config['canned_responses'][response_selection])
             elif response_selection == 's':
                 print("> SKIPPING MESSAGE <\n"
                       "_________________________________________________________________\n\n")

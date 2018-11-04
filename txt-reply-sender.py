@@ -47,9 +47,9 @@ def print_autoresponding(message):
 def txt_back(message, replyStr):
     print(f"\n> SENDING TO {message.from_} <\n{replyStr}\n"
           "_________________________________________________________________\n\n")
+    utils.delete_message(client, message.sid)
     utils.txt(message.to, client, message.from_, replyStr)
     utils.log(config["sent_logs_filename"], "sent " + replyStr + " to " + message.from_)
-    utils.delete_message(client, message.sid)
 
 def delete_msg(twilio_client, message):
     utils.delete_message(twilio_client, message.sid)

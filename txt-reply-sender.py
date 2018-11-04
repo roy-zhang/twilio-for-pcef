@@ -57,7 +57,9 @@ def get_messages(twilio_client):
     filtered_messages = filter_numbers(retrieved_messages, config["last_number_floor"], config["last_number_ceiling"])
     print('\nThere are {} inbound messages in your account ...\n'.format(count_inbound(filtered_messages)))
     for message in filtered_messages:
-        if message.direction == "inbound":
+        if text_filter.is_wrong_number(message.body):
+            continue
+        else:
             print_preamble(message)
             utils.log(config["received_logs_filename"], "got " + message.body + " from " + message.from_)
             response_selection = get_input()

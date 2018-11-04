@@ -57,7 +57,7 @@ def delete_msg(twilio_client, message):
           "_________________________________________________________________\n\n")
 
 def get_messages(twilio_client):
-    retrieved_messages = twilio_client.messages.list(limit=100)
+    retrieved_messages = twilio_client.messages.list(1)
     filtered_messages = filter_numbers(retrieved_messages, config["last_number_floor"], config["last_number_ceiling"])
     print('\nThere are {} inbound messages in your account ...\n'.format(count_inbound(filtered_messages)))
     for message in filtered_messages:

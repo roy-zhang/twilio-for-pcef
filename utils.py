@@ -17,4 +17,8 @@ def txt(from_number, client, number, message):
     client.messages.create(to=number, from_=from_number, body=message)
 
 def delete_message(client, message_sid):
-    client.messages(message_sid).delete()
+    try:
+        client.messages(message_sid).delete()
+    except Exception:
+        print("skipping instead of deleting")
+

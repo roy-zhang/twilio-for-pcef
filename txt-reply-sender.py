@@ -99,7 +99,7 @@ def handle_message(twilio_client, msgs):
         if response_selection == 'd':
             try_delete_msg(twilio_client, msgs)
         elif response_selection in ['1', '2', '3']:
-            txt_back(twilio_client, msgss, config['canned_responses'][response_selection])
+            txt_back(twilio_client, msgs, config['canned_responses'][response_selection])
         elif response_selection == 's' or response_selection == '':
             print("> SKIPPING MESSAGE <\n"
                   "_________________________________________________________________\n\n")

@@ -7,7 +7,7 @@ def has_wrong_number(body):
     return bool(re.compile(r'(?i)^.*(wrong number|wrong phone number|wrong #|wrong person|this isn\'t|this is not).*$').search(body))
 
 def has_already_voted(body):
-    return bool(re.compile(r'(?i)^.*(already voted|voted already|did vote|have voted|dropped off|mailed|turned in|turned it in|all voted).*$').search(body))
+    return bool(re.compile(r'(?i)^.*(did vote|have voted|dropped off|mailed|turned in|turned it in|voted).*$').search(body))
 
 def has_just_stop(body):
     return bool(re.compile(r'(?i)^stop$').search(body))

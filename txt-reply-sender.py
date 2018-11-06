@@ -50,23 +50,31 @@ def filter_numbers(messages, floor, ceiling):
 def time_what_hours_ago(hours_ago):
     return datetime.datetime.now() - datetime.timedelta(hours=hours_ago)
 
-def auto_respond(msgs, response_str):
+def auto_respond(twilio_client, msgs, response_str):
     print(f"\n> autoresponding TO {msgs[-1].from_} <\n{body_of(msgs)}\n")
-    txt_back(msgs, response_str)
+    txt_back(twilio_client, msgs, response_str)
 
-def txt_back(msgs, reply_str):
+def txt_back(twilio_client, msgs, reply_str):
     print(f"\n> SENDING TO {msgs[-1].from_} <\n{reply_str}\n"
           "_________________________________________________________________\n\n")
-    for msg in msgs:
-        utils.delete_message(client, msg.sid)
-    utils.txt(msgs[-1].to, client, msgs[-1].from_, reply_str)
-    utils.log(config["sent_logs_filename"], "sent " + reply_str + " to " + msgs[-1].from_)
+    try:
+        delete_msg(twilio_client, msgs)
+        utils.txt(msgs[-1].to, client, msgs[-1].from_, reply_str)
+        utils.log(config["sent_logs_filename"], "sent " + reply_str + " to " + msgs[-1].from_)
+    except Exception:
+        print("skipping instead of deleting")
 
 def delete_msg(twilio_client, msgs):
     for msg in msgs:
         utils.delete_message(twilio_client, msg.sid)
     print(f"> DELETING MESSAGE {body_of(msgs)}<\n " 
           "_________________________________________________________________\n\n")
+
+def try_delete_msg(twilio_client, msgs):
+    try:
+        delete_msg(twilio_client, msgs)
+    except Exception:
+        print("skipping instead of deleting")
 
 def body_of(msgs):
     return " ".join(reversed([msg.body for msg in msgs]))
@@ -75,23 +83,23 @@ def handle_message(twilio_client, msgs):
     body = body_of(msgs)
     if text_filter.has_wrong_number(body):
         if text_filter.has_already_voted(body):
-            auto_respond(msgs, "Sorry! Thanks for voting anyways!")
+            auto_respond(twilio_client, msgs, "Sorry! Thanks for voting anyways!")
         else:
-            auto_respond(msgs, "Sorry! Hope you vote anyways!")
+            auto_respond(twilio_client, msgs, "Sorry! Hope you vote anyways!")
     elif text_filter.has_already_voted(body):
-        auto_respond(msgs, "Great! Thanks for voting!")
+        auto_respond(twilio_client, msgs, "Great! Thanks for voting!")
     elif text_filter.has_stop_text(body) or text_filter.has_swear_words(body):
         print(f"> AUTODELETING MESSAGE {body}<\n "
               "_________________________________________________________________\n\n")
-        delete_msg(twilio_client, msgs)
+        try_delete_msg(twilio_client, msgs)
     else:
         print_preamble(msgs)
         utils.log(config["received_logs_filename"], "got " + body + " from " + msgs[-1].from_)
         response_selection = get_input()
         if response_selection == 'd':
-            delete_msg(twilio_client, msgs)
+            try_delete_msg(twilio_client, msgs)
         elif response_selection in ['1', '2', '3']:
-            txt_back(msgs, config['canned_responses'][response_selection])
+            txt_back(twilio_client, msgss, config['canned_responses'][response_selection])
         elif response_selection == 's' or response_selection == '':
             print("> SKIPPING MESSAGE <\n"
                   "_________________________________________________________________\n\n")
@@ -99,10 +107,10 @@ def handle_message(twilio_client, msgs):
             print('Exiting.')
             sys.exit()
         else:
-            txt_back(msgs, response_selection)
+            txt_back(twilio_client, msgs, response_selection)
 
 def get_messages(twilio_client):
-    retrieved_messages = twilio_client.messages.list(limit=50000)
+    retrieved_messages = twilio_client.messages.list(limit=10000)
     filtered_messages = filter_numbers(retrieved_messages, config["last_number_floor"], config["last_number_ceiling"])
     print('\nThere are {} inbound messages in your account ...\n'.format(count_inbound(filtered_messages)))
 

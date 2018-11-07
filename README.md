@@ -13,6 +13,9 @@ and fill in the api account, token and phone number.
 change message as necessary
 
 open terminal with ctrl alt t
+
+type: shell and press enter
+
 cd ~/Downloads to go to downloads folder
 
 install python3 on your computer
@@ -26,4 +29,5 @@ to run
 
 ctrl-c to quit
 
-
+# Special Thanks
+Special thanks to [@Dylanbud](https://github.com/dylanbud) for the inspiration behind this project and providing the proof of concept to get it started!

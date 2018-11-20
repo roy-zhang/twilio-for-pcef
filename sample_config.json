@@ -13,5 +13,8 @@
          "1": "Awesome! thanks for voting!",
          "2": "Sorry! hope you vote anyways",
          "3": "That's fine! Thanks for letting me know"
-    }
+    },
+   "full_van_filename" : "all-list.csv",
+   "got_filename" : "got.csv",
+   "responses_filename" : "responses.csv"
 }
